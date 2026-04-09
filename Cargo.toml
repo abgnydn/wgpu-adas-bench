@@ -1,0 +1,11 @@
+[package]
+name = "wgpu-adas-bench"
+version = "0.1.0"
+edition = "2021"
+description = "ADAS sensor fusion benchmark — fused wgpu-native vs multi-kernel PyTorch on same GPU."
+
+[dependencies]
+wgpu = "24"
+pollster = "0.4"
+bytemuck = { version = "1", features = ["derive"] }
+rand = "0.8"
