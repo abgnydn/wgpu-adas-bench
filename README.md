@@ -59,6 +59,18 @@ For NVIDIA on Linux (Docker/vast.ai):
 VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json ./target/release/wgpu-adas-bench
 ```
 
+## Visualization
+
+Dump a scripted highway scenario (10 objects: cars, trucks, pedestrian, cyclist, motorcycle) and visualize the full fusion output in [rerun.io](https://rerun.io):
+
+```bash
+cargo run --release -- --dump
+pip install rerun-sdk numpy
+python3 visualize.py
+```
+
+Shows bird's-eye view (radar detections, velocity arrows, lanes, path candidates, risk halos) and camera view (projected bounding boxes, class labels, TTC) side by side.
+
 ## Config
 
 - **R** = radar detections per frame (64-1024)
