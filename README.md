@@ -1,5 +1,10 @@
 # wgpu-adas-bench
 
+[![CI](https://github.com/abgnydn/wgpu-adas-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/abgnydn/wgpu-adas-bench/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Speedup](https://img.shields.io/badge/vs%20PyTorch%20MPS-12--15×-ffb56e)](#the-number)
+[![Rust](https://img.shields.io/badge/rust-stable-orange)](https://www.rust-lang.org/)
+
 Full ADAS sensor fusion pipeline — 11 stages fused into a single GPU dispatch via `wgpu-native`. Benchmarked against the equivalent multi-kernel PyTorch implementation on the same hardware.
 
 ## The Number
