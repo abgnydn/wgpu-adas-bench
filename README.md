@@ -1,15 +1,17 @@
 # wgpu-adas-bench
 
+> **Status: archived.** A limit study, complete as measured. The fusion research line continues at [kernelfusion.dev](https://kernelfusion.dev).
+
 [![CI](https://github.com/abgnydn/wgpu-adas-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/abgnydn/wgpu-adas-bench/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Speedup](https://img.shields.io/badge/vs%20PyTorch%20MPS-12--15×-ffb56e)](#the-number)
 [![Rust](https://img.shields.io/badge/rust-stable-orange)](https://www.rust-lang.org/)
 
-Full ADAS sensor fusion pipeline — 11 stages fused into a single GPU dispatch via `wgpu-native`. Benchmarked against the equivalent multi-kernel PyTorch implementation on the same hardware.
+Full ADAS sensor fusion pipeline — ten stages fused into a single GPU dispatch via `wgpu-native`. Benchmarked against the equivalent multi-kernel PyTorch implementation on the same hardware.
 
 ## The Number
 
-**Same GPU. Same workload. 1 dispatch vs 11.**
+**Same GPU. Same workload. One dispatch vs ten kernels.**
 
 | Config | wgpu-native | PyTorch | Speedup |
 |---|---|---|---|
@@ -23,7 +25,7 @@ ADAS needs 30 fps (33 ms). The fused version runs at 763 fps (1.3 ms) — **25×
 
 ## Pipeline
 
-All 11 stages run in a single compute shader dispatch:
+All ten stages run in a single compute shader dispatch:
 
 | # | Stage | What it does |
 |---|---|---|
@@ -36,8 +38,7 @@ All 11 stages run in a single compute shader dispatch:
 | 7 | Lane association | World-space lateral position → lane ID + offset |
 | 8 | Time-to-collision | Range / closing velocity |
 | 9 | Risk scoring | TTC × class weight × lane proximity × confidence |
-| 10 | Path planning | 16 candidate trajectories × 10 timesteps, collision-aware scoring |
-| 11 | Risk aggregation | Per-object worst-case path cost |
+| 10 | Path planning | 16 candidate trajectories × 10 timesteps, collision-aware scoring; keeps each object's worst-case path cost |
 
 PyTorch dispatches each stage as a separate GPU kernel. Each dispatch has 5-20 μs overhead, and intermediate data round-trips through global memory. The fused shader keeps everything in registers.
 
@@ -45,7 +46,7 @@ PyTorch dispatches each stage as a separate GPU kernel. Each dispatch has 5-20 �
 
 Adding stages 6-11 barely changed the fused version (1.33 ms → 1.31 ms) because the extra compute stays in thread-local registers. But PyTorch went from 4 ms to 15-20 ms — each new stage adds another kernel launch + memory round-trip.
 
-**The gap grows with pipeline complexity.** A 5-stage pipeline gave 3×. The full 11-stage pipeline gives 12-15×.
+**The gap grows with pipeline complexity.** A 5-stage pipeline gave 3×. The full ten-stage pipeline gives 12-15×.
 
 ## Run
 
@@ -88,7 +89,7 @@ Shows bird's-eye view (radar detections, velocity arrows, lanes, path candidates
 ## Related
 
 - [wgpu-native-bench](https://github.com/abgnydn/wgpu-native-bench) — core compute benchmarks (Rastrigin, N-Body)
-- [gpubench.dev](https://gpubench.dev) — browser GPU benchmarks (624 devices)
+- [gpubench.dev](https://gpubench.dev) — browser GPU benchmarks
 - [kernelfusion.dev](https://kernelfusion.dev) — kernel fusion research
 
 ## License

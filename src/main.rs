@@ -518,7 +518,7 @@ fn main() {
     println!();
     println!("╔══════════════════════════════════════════════════════════════╗");
     println!("║  ADAS Sensor Fusion Benchmark                              ║");
-    println!("║  Full pipeline: 11 stages fused into 1 GPU dispatch        ║");
+    println!("║  Full pipeline: 10 stages fused into 1 GPU dispatch        ║");
     println!("╚══════════════════════════════════════════════════════════════╝");
     println!();
 
@@ -540,8 +540,7 @@ fn main() {
     println!("  7. Lane association (lateral position → lane ID)");
     println!("  8. Time-to-collision");
     println!("  9. Collision risk scoring");
-    println!(" 10. Path planning (16 candidates × 10 steps)");
-    println!(" 11. Risk aggregation");
+    println!(" 10. Path planning (16 candidates × 10 steps, worst-case aggregation)");
     println!();
 
     println!("─── Results ───");

@@ -7,13 +7,13 @@ from `0.1.0`.
 
 ## [0.1.0] — 2026-05-04
 
-First public release. **Full ADAS sensor fusion pipeline — 11 stages
+First public release. **Full ADAS sensor fusion pipeline — ten stages
 fused into a single GPU dispatch via `wgpu-native`, benchmarked against
 the equivalent multi-kernel PyTorch implementation on the same hardware.**
 
 ### Headline numbers (Apple M2 Pro, Metal, N=30 runs, 5 warmup)
 
-| Config                 | wgpu-native (1 dispatch) | PyTorch MPS (11 dispatches) | Speedup    |
+| Config                 | wgpu-native (1 dispatch) | PyTorch MPS (10 kernels) | Speedup    |
 | ---------------------- | -----------------------: | --------------------------: | ---------: |
 | R=256,  C=50,  T=128   |    **780 fps** (1.28 ms) |             66 fps (15.2 ms) | **11.9×** |
 | R=512,  C=100, T=256   |    **763 fps** (1.31 ms) |             50 fps (20.1 ms) | **15.3×** |
@@ -25,19 +25,23 @@ inference downstream.
 
 ### Pipeline
 
-All 11 stages run in a single compute shader dispatch:
+*(Corrected 2026-08-15: this entry originally listed eleven stages, several of
+which — LiDAR projection, temporal alignment, Hungarian association, track NMS,
+track lifecycle, persistence write-back — were never implemented in any
+release. The list below matches the released code.)*
+
+All ten stages run in a single compute shader dispatch:
 
 1. Radar projection (polar → Cartesian → image plane)
-2. Camera projection (pinhole model)
-3. LiDAR projection
-4. Sensor temporal alignment
-5. Track association (Hungarian on score matrix)
-6. Kalman predict
-7. Kalman update
-8. Track NMS
-9. Track lifecycle (birth / death)
-10. Output formatting
-11. Persistence buffer write-back
+2. Cost matrix (radar × camera pairwise distance)
+3. Greedy association (atomicMin, no CPU round-trip)
+4. Kalman predict (6-state constant acceleration)
+5. Kalman update (radar + camera fusion)
+6. Classification (RCS + box area + velocity)
+7. Lane association
+8. Time-to-collision
+9. Risk scoring
+10. Path planning (collision-aware, keeps worst-case path cost per object)
 
 ### Companion projects
 
